@@ -6,8 +6,9 @@ use Database\Seeders\Traits\DisablingForeignKey;
 use Database\Seeders\Traits\TruncateTable;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
-class CommentSeeder extends Seeder
+class UserSeeder extends Seeder
 {
     use TruncateTable, DisablingForeignKey;
     /**
@@ -16,8 +17,8 @@ class CommentSeeder extends Seeder
     public function run(): void
     {
         $this->disableForeignKey();
-        $this->truncate('comments');
-        $comments = \App\Models\Comment::factory(5)->create();
+        $this->truncate('users');
+        $user = \App\Models\User::factory(10)->create();
         $this->enableForeignKey();
     }
 }

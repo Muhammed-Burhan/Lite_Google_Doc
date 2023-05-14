@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
-use App\Http\Requests\UpdatePostRequest;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class PostController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return response()->json(['data' => User::all()]);
     }
 
     /**
@@ -21,7 +21,7 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        return response(['data' => 'saved']);
     }
 
     /**
@@ -29,13 +29,14 @@ class PostController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $user = User::find($id);
+        return new JsonResponse(['data' => $user]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(string $id)
+    public function update(Request $request, string $id)
     {
         return response(['data' => 'updated']);
     }
@@ -45,6 +46,6 @@ class PostController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        return response(['data' => 'deleted']);
     }
 }
