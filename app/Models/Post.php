@@ -13,6 +13,15 @@ class Post extends Model
         'body' => 'array'
     ];
 
+    protected $fillable = [
+        'title',
+        'body'
+    ];
+
+    protected $appends = [
+        'title_upper_case'
+    ];
+
     public function comments()
     {
         return $this->hasMany(Comment::class, 'post_id', 'id');

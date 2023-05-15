@@ -10,7 +10,7 @@ Route::middleware([
 
     Route::get('/users', [UserController::class, 'index'])->name('index')->withoutMiddleware('aut');
 
-    Route::get('/users/{id}', [UserController::class, 'show'])->name('show')->whereNumber('id');
+    Route::get('/users/{user}', [UserController::class, 'show'])->name('show')->whereNumber('id');
 
     Route::post('/users', [UserController::class, 'store'])->name('store');
 

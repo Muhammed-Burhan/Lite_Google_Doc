@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -10,42 +11,78 @@ class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
+     *  @return ResourceCollection
      */
     public function index()
     {
-        return response()->json(['data' => User::all()]);
+        $users = User::query()->get();
+        return UserResource::collection($users);
     }
 
     /**
      * Store a newly created resource in storage.
+     *  @return UserResource
      */
     public function store(Request $request)
     {
-        return response(['data' => 'saved']);
+        $createdUser = User::query()->create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $request->password
+        ]);
+        return new UserResource($createdUser);
     }
 
     /**
      * Display the specified resource.
+     *  @return UserResource
      */
-    public function show(string $id)
+    public function show(User $user)
     {
-        $user = User::find($id);
-        return new JsonResponse(['data' => $user]);
+        return new UserResource($user);
     }
 
     /**
      * Update the specified resource in storage.
+     *  @return JsonResponse | UserResource
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, User $user)
     {
-        return response(['data' => 'updated']);
+        // return response([
+        //     'data'=>$user
+        // ]);
+        $updatedUser = $user->update([
+            'name' => $request->name ?? $user->name,
+            'email' => $request->email ?? $user->email,
+        ]);
+
+        if (!$updatedUser) {
+            return new JsonResponse([
+                'error' => [
+                    'failed to update resource'
+                ]
+            ], 400);
+        } else {
+            return new UserResource($user);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(User $user)
     {
-        return response(['data' => 'deleted']);
+        $deletedUser = $user->forceDelete();
+        if (!$deletedUser) {
+            return new JsonResponse([
+                'error' => [
+                    'failed to delete resource'
+                ]
+            ], 400);
+        } else {
+            return new JsonResponse([
+                'data' => 'Success'
+            ]);
+        }
     }
 }
