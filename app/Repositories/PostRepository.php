@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+use App\Exceptions\GeneralJsonException;
+use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
 use Attribute;
 use Error;
@@ -19,6 +21,7 @@ class PostRepository extends BaseRepository
                 'title' => data_get($attribute, 'title'),
                 'body' => data_get($attribute, 'body'),
             ]);
+
             if ($userID = data_get($attribute, 'user_ids')) {
                 $createPost->users()->sync($userID);
             }
@@ -35,9 +38,7 @@ class PostRepository extends BaseRepository
                 'body' => data_get($attribute, 'body', $post->body),
             ]);
 
-            if (!$updatedPost) {
-                throw new \Exception("failed to update resource");
-            }
+            throw_if(!$updatedPost, GeneralJsonException::class, 'Failed to update resource');
 
             if ($userIds = data_get($attribute, 'user_ids')) {
                 $post->users()->sync($userIds);
@@ -52,9 +53,7 @@ class PostRepository extends BaseRepository
     {
         return DB::transaction(function () use ($post) {
             $deletePost = $post->forceDelete();
-            if (!$deletePost) {
-                throw new Exception("failed to delete resource");
-            }
+            throw_if(!$deletePost, GeneralJsonException::class, 'Failed to delete resource');
             return 'deleted';
         });
     }
