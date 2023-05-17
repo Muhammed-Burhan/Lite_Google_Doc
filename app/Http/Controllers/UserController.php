@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\Models\User\UserCreated;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Repositories\UserRepository;
@@ -16,7 +17,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $pageSize = $request->page_size;
+        $pageSize = $request->page_size ?? 5;
         $users = User::query()->paginate($pageSize);
         return UserResource::collection($users);
     }
@@ -32,6 +33,7 @@ class UserController extends Controller
             'email',
             'password'
         ]));
+
         return new UserResource($createdUser);
     }
 
