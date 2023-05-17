@@ -2,6 +2,9 @@
 
 namespace App\Repositories;
 
+use App\Events\Models\Post\PostCreated;
+use App\Events\Models\Post\PostDeleted;
+use App\Events\Models\Post\PostUpdated;
 use App\Exceptions\GeneralJsonException;
 use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
@@ -22,6 +25,9 @@ class PostRepository extends BaseRepository
                 'body' => data_get($attribute, 'body'),
             ]);
 
+            throw_if(!$createPost, GeneralJsonException::class, 'Failed to create user');
+            event(new PostCreated($createPost));
+
             if ($userID = data_get($attribute, 'user_ids')) {
                 $createPost->users()->sync($userID);
             }
@@ -39,7 +45,7 @@ class PostRepository extends BaseRepository
             ]);
 
             throw_if(!$updatedPost, GeneralJsonException::class, 'Failed to update resource');
-
+            event(new PostUpdated($post));
             if ($userIds = data_get($attribute, 'user_ids')) {
                 $post->users()->sync($userIds);
             }
@@ -54,6 +60,7 @@ class PostRepository extends BaseRepository
         return DB::transaction(function () use ($post) {
             $deletePost = $post->forceDelete();
             throw_if(!$deletePost, GeneralJsonException::class, 'Failed to delete resource');
+            event(new PostDeleted($post));
             return 'deleted';
         });
     }

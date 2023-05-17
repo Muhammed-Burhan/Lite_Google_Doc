@@ -9,21 +9,24 @@ class GeneralJsonException extends Exception
 {
     protected $code = 422;
 
-    public  function report()
-    {
-        $a = 'dada';
-        dump($a);
-    }
+    // public  function report()
+    // {
+    //     $a = 'dada';
+    //     dump($a);
+    // }
 
     /**
      * Render the exception as an HTTP response.
      *
      * @return JsonResponse
+     * @param \Illuminate\Http\Request $request
      */
-    public function render()
+    public function render($request)
     {
         return new JsonResponse([
-            'error' => 'Something went wrong.'
+            'error' => [
+                'message' => $this->getMessage()
+            ]
         ], $this->code);
     }
 }
